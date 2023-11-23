@@ -68,7 +68,8 @@ function postLogin(Request $request, Response $response, $args)
 
     $dataUser = '{"username":"emma","password":"toto"}';
     $flux = '{"nom":"curtis","prenom":"emma"}';
-    $response->getBody()->write($flux);
+
+    //$response->getBody()->write($dataUser);
     $response = createJwT($response);
     $response->getBody()->write($flux);
 
