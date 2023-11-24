@@ -55,7 +55,7 @@ function getUtilisateur(Request $request, Response $response, $args)
     $payload = getJWTToken($request);
     $login  = $payload->userid;
 
-    $flux = '{"lastName":"curtis","firstName":"emma"}';
+    $flux = '{"lastName":"Curtis","firstName":"emma"}';
 
     $response->getBody()->write($flux);
 
@@ -65,13 +65,30 @@ function getUtilisateur(Request $request, Response $response, $args)
 // APi d\'Authentification générant un JWT
 function postLogin(Request $request, Response $response, $args)
 {
+    $body = $request->getParsedBody();
 
-    $dataUser = '{"username":"emma","password":"toto"}';
-    $flux = '{"lastName":"curtis","firstName":"emma"}';
+    if (isset($body['username']) && isset($body['password'])) {
+        $username = $body['username'];
+        $password = $body['password'];
 
-    //$response->getBody()->write($dataUser);
-    $response = createJwT($response);
-    $response->getBody()->write($flux);
+        if ($username === 'emma' && $password === 'toto') {
+            $token = createJWT($response);
 
-    return addHeaders($response);
+            $userData = [
+                'lastName' => 'Curtis',
+                'firstName' => 'emma',
+            ];
+
+            $flux = json_encode($userData);
+
+            $response = createJwt($response, $token);
+
+            $response->getBody()->write($flux);
+
+            return addHeaders($response);
+        }
+    }
+
+    $response->getBody()->write(json_encode(['error' => 'Identifiants incorrects']));
+    return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
 }
