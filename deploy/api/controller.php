@@ -15,7 +15,7 @@ function optionsCatalogue(Request $request, Response $response, $args)
 function hello(Request $request, Response $response, $args)
 {
     $array = [];
-    $array["nom"] = $args['name'];
+    $array["Name"] = $args['name'];
     $response->getBody()->write(json_encode($array));
     return $response;
 }
@@ -55,7 +55,7 @@ function getUtilisateur(Request $request, Response $response, $args)
     $payload = getJWTToken($request);
     $login  = $payload->userid;
 
-    $flux = '{"nom":"curtis","prenom":"emma"}';
+    $flux = '{"lastName":"curtis","firstName":"emma"}';
 
     $response->getBody()->write($flux);
 
@@ -67,7 +67,7 @@ function postLogin(Request $request, Response $response, $args)
 {
 
     $dataUser = '{"username":"emma","password":"toto"}';
-    $flux = '{"nom":"curtis","prenom":"emma"}';
+    $flux = '{"lastName":"curtis","firstName":"emma"}';
 
     //$response->getBody()->write($dataUser);
     $response = createJwT($response);
