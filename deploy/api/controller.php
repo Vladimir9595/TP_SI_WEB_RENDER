@@ -55,7 +55,7 @@ function getUtilisateur(Request $request, Response $response, $args)
     $payload = getJWTToken($request);
     $login  = $payload->userid;
 
-    $flux = '{"lastName":"Curtis","firstName":"emma"}';
+    $flux = '{"lastName":"Watson","firstName":"Emma"}';
 
     $response->getBody()->write($flux);
 
@@ -75,8 +75,8 @@ function postLogin(Request $request, Response $response, $args)
             $token = createJWT($response);
 
             $userData = [
-                'lastName' => 'Curtis',
-                'firstName' => 'emma',
+                'lastName' => 'Watson',
+                'firstName' => 'Emma',
             ];
 
             $flux = json_encode($userData);
