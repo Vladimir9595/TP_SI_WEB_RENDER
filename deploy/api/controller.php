@@ -92,3 +92,12 @@ function postLogin(Request $request, Response $response, $args)
     $response->getBody()->write(json_encode(['error' => 'Identifiants incorrects']));
     return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
 }
+
+function postLogout(Request $request, Response $response, $args)
+{
+    $response = $response->withHeader('Set-Cookie', 'jwt=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT');
+
+    $response->getBody()->write(json_encode(['message' => 'Déconnexion réussie']));
+
+    return addHeaders($response);
+}
