@@ -2,6 +2,8 @@ FROM php:7.4-apache
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
+RUN apt-get update && apt-get install -y nano
+
 COPY ./deploy/ /var/www/html
 WORKDIR /var/www/html
 
