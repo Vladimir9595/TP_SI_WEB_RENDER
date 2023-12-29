@@ -17,4 +17,8 @@ $conn = array(
 );
 
 
-$entityManager = EntityManager::create($conn, $config);
+try {
+    $entityManager = EntityManager::create($conn, $config);
+} catch (\Exception $e) {
+    echo "Une erreur s'est produite : " . $e->getMessage();
+}
