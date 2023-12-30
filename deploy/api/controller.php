@@ -97,8 +97,8 @@ function postLogin(Request $request, Response $response, $args)
     }
     if (!$err) {
         $utilisateurRepository = $entityManager->getRepository('Users');
-        $utilisateur = $utilisateurRepository->findOneBy(array('login' => $login, 'password' => $pass));
-        if ($utilisateur and $login == $utilisateur->getLogin() and $pass == $utilisateur->getPassword()) {
+        $utilisateur = $utilisateurRepository->findOneBy(array('login' => $login));
+        if ($utilisateur && password_verify($pass, $utilisateur->getPassword())) {
             $response = addHeaders($response);
             $response = createJwT($response);
             $data = array('name' => $utilisateur->getLastname(), 'prenom' => $utilisateur->getFirstname());
@@ -185,16 +185,16 @@ function createUtilisateur(Request $request, Response $response)
     $phonenumber = $body['phonenumber'] ?? "";
 
     // Utilisation de filtres pour nettoyer les données
-    $lastname = filter_var($lastname, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $firstname = filter_var($firstname, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $adress = filter_var($adress, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $postalcode = filter_var($postalcode, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $city = filter_var($city, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $lastname = filter_var($lastname, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
+    $firstname = filter_var($firstname, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
+    $adress = filter_var($adress, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
+    $postalcode = filter_var($postalcode, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
+    $city = filter_var($city, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
     $email = filter_var($email, FILTER_VALIDATE_EMAIL);
-    $sex = filter_var($sex, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $login = filter_var($login, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $password = password_hash($password, PASSWORD_BCRYPT); // Hashage du mot de passe
-    $phonenumber = filter_var($phonenumber, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $sex = filter_var($sex, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
+    $login = filter_var($login, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
+    $password = password_hash($password, PASSWORD_BCRYPT);
+    $phonenumber = filter_var($phonenumber, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
 
     // Vérification des données
     if (empty($lastname) || empty($firstname) || empty($adress) || empty($postalcode) || empty($city) || empty($email) || empty($sex) || empty($login) || empty($password) || empty($phonenumber)) {
