@@ -5,7 +5,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 function optionsCatalogue(Request $request, Response $response, $args)
 {
-
     // Evite que le front demande une confirmation à chaque modification
     $response = $response->withHeader("Access-Control-Max-Age", 600);
 
@@ -53,7 +52,6 @@ function getCatalogue(Request $request, Response $response, $args)
 
 function optionsUtilisateur(Request $request, Response $response, $args)
 {
-
     // Evite que le front demande une confirmation à chaque modification
     $response = $response->withHeader("Access-Control-Max-Age", 600);
 
@@ -115,7 +113,7 @@ function postLogin(Request $request, Response $response, $args)
     return addHeaders($response);
 }
 
-// Fonction pour la création d'un produit avec un JWT valide en utilisant Doctrine avec les champs : name, imgurl, description, price, category
+// Création d'un produit nécessitant un JWT valide en utilisant Doctrine avec les champs : name, imgurl, description, price, category
 function createProduct(Request $request, Response $response, $args)
 {
     global $entityManager;
@@ -137,22 +135,17 @@ function createProduct(Request $request, Response $response, $args)
     if (!preg_match("/[a-zA-Z0-9]{1,20}/", $name)) {
         $err = true;
     }
-    if (!preg_match("/^[a-zA-Z0-9\/:.\\?!|&]+$/", $imgurl)) {
-        $err = true;
-    }
     if (!preg_match("/[a-zA-Z0-9]{1,20}/", $description)) {
         $err = true;
     }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $price)) {
+    if (!preg_match("/^[a-zA-Z0-9.,]{1,20}$/", $price)) {
         $err = true;
     }
     if (!preg_match("/[a-zA-Z0-9]{1,20}/", $category)) {
         $err = true;
     }
     if ($utilisateur && !$err) {
-        $product = new Products($name, $imgurl, $description, $price, $category);
-        // $productRepository = $entityManager->getRepository('Products');
-        // $product = new $productRepository;
+        $product = new Products();
         $product->setName($name);
         $product->setImgurl($imgurl);
         $product->setDescription($description);
@@ -172,12 +165,14 @@ function createProduct(Request $request, Response $response, $args)
 }
 
 
-// Fonction pour la création d'un utilisateur avec un JWT valide en utilisant Doctrine avec les champs : lastname, firstname, adress, postalcode, city, email, sex, login, password, phonenumber
-function createUtilisateur(Request $request, Response $response, $args)
+// Création d'un utilisateur + génération d'un JWT en utilisant Doctrine avec les champs : lastname, firstname, adress, postalcode, city, email, sex, login, password, phonenumber
+function createUtilisateur(Request $request, Response $response)
 {
     global $entityManager;
+
     $err = false;
     $body = $request->getParsedBody();
+
     $lastname = $body['lastname'] ?? "";
     $firstname = $body['firstname'] ?? "";
     $adress = $body['adress'] ?? "";
@@ -189,39 +184,25 @@ function createUtilisateur(Request $request, Response $response, $args)
     $password = $body['password'] ?? "";
     $phonenumber = $body['phonenumber'] ?? "";
 
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $lastname)) {
+    // Utilisation de filtres pour nettoyer les données
+    $lastname = filter_var($lastname, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $firstname = filter_var($firstname, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $adress = filter_var($adress, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $postalcode = filter_var($postalcode, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $city = filter_var($city, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $email = filter_var($email, FILTER_VALIDATE_EMAIL);
+    $sex = filter_var($sex, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $login = filter_var($login, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $password = password_hash($password, PASSWORD_BCRYPT); // Hashage du mot de passe
+    $phonenumber = filter_var($phonenumber, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    // Vérification des données
+    if (empty($lastname) || empty($firstname) || empty($adress) || empty($postalcode) || empty($city) || empty($email) || empty($sex) || empty($login) || empty($password) || empty($phonenumber)) {
         $err = true;
     }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $firstname)) {
-        $err = true;
-    }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $adress)) {
-        $err = true;
-    }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $postalcode)) {
-        $err = true;
-    }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $city)) {
-        $err = true;
-    }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $email)) {
-        $err = true;
-    }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $sex)) {
-        $err = true;
-    }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $login)) {
-        $err = true;
-    }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $password)) {
-        $err = true;
-    }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $phonenumber)) {
-        $err = true;
-    }
+
     if (!$err) {
-        $utilisateurRepository = $entityManager->getRepository('Users');
-        $user = new $utilisateurRepository;
+        $user = new Users;
         $user->setLastname($lastname);
         $user->setFirstname($firstname);
         $user->setAdress($adress);
@@ -234,13 +215,11 @@ function createUtilisateur(Request $request, Response $response, $args)
         $user->setPhonenumber($phonenumber);
         $entityManager->persist($user);
         $entityManager->flush();
-        $response = addHeaders($response);
         $response = createJwT($response);
         $data = array('lastname' => $user->getLastname(), 'firstname' => $user->getFirstname(), 'adress' => $user->getAdress(), 'postalcode' => $user->getPostalcode(), 'city' => $user->getCity(), 'email' => $user->getEmail(), 'sex' => $user->getSex(), 'login' => $user->getLogin(), 'password' => $user->getPassword(), 'phonenumber' => $user->getPhonenumber());
         $response->getBody()->write(json_encode($data));
     } else {
         $response = $response->withStatus(500);
     }
-
-    return addHeaders($response);
+    return $response;
 }
