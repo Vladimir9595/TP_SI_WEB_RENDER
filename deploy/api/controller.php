@@ -191,6 +191,12 @@ function createProduct(Request $request, Response $response, $args)
     if (!preg_match("/[a-zA-Z0-9]{1,20}/", $category)) {
         $err = true;
     }
+
+    // Vérification des données
+    if (empty($name) || empty($imgurl) || empty($price)) {
+        $err = true;
+    }
+
     if ($utilisateur && !$err) {
         $product = new Products();
         $product->setName($name);
