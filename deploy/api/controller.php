@@ -240,16 +240,35 @@ function createUtilisateur(Request $request, Response $response)
     $phonenumber = $body['phonenumber'] ?? "";
 
     // Utilisation de filtres pour nettoyer les données
-    $lastname = filter_var($lastname, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
-    $firstname = filter_var($firstname, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
-    $adress = filter_var($adress, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
-    $postalcode = filter_var($postalcode, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
-    $city = filter_var($city, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
-    $email = filter_var($email, FILTER_VALIDATE_EMAIL);
-    $sex = filter_var($sex, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
-    $login = filter_var($login, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
+    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $lastname)) {
+        $err = true;
+    }
+    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $firstname)) {
+        $err = true;
+    }
+    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $adress)) {
+        $err = true;
+    }
+    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $postalcode)) {
+        $err = true;
+    }
+    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $city)) {
+        $err = true;
+    }
+    if (!preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $email)) {
+        $err = true;
+    }
+    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $sex)) {
+        $err = true;
+    }
+    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $login)) {
+        $err = true;
+    }
+    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $phonenumber)) {
+        $err = true;
+    }
+
     $password = password_hash($password, PASSWORD_BCRYPT);
-    $phonenumber = filter_var($phonenumber, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
 
     // Vérification des données
     if (empty($lastname) || empty($firstname) || empty($adress) || empty($postalcode) || empty($city) || empty($email) || empty($sex) || empty($login) || empty($password) || empty($phonenumber)) {
