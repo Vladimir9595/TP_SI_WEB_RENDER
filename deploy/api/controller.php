@@ -46,6 +46,7 @@ function  getSearchCalatogue(Request $request, Response $response, $args)
             $data[] = [
                 'id' => $product->getId(),
                 'name' => $product->getName(),
+                'imgurl' => $product->getImgurl(),
                 'description' => $product->getDescription(),
                 'price' => $product->getPrice(),
                 'category' => $product->getCategory(),
@@ -82,6 +83,7 @@ function getCatalogue(Request $request, Response $response, $args)
             $data[] = [
                 'id' => $product->getId(),
                 'name' => $product->getName(),
+                'imgurl' => $product->getImgurl(),
                 'description' => $product->getDescription(),
                 'price' => $product->getPrice(),
                 'category' => $product->getCategory(),
