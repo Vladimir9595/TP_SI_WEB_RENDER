@@ -118,7 +118,7 @@ function getUtilisateur(Request $request, Response $response, $args)
     $utilisateurRepository = $entityManager->getRepository('Users');
     $utilisateur = $utilisateurRepository->findOneBy(array('login' => $login));
     if ($utilisateur) {
-        $data = array('nom' => $utilisateur->getLastname(), 'prenom' => $utilisateur->getFirstname());
+        $data = array('lastname' => $utilisateur->getLastname(), 'firstname' => $utilisateur->getFirstname());
         $response = addHeaders($response);
         $response = createJwT($response);
         $response->getBody()->write(json_encode($data));
@@ -150,7 +150,7 @@ function postLogin(Request $request, Response $response, $args)
         if ($utilisateur && password_verify($pass, $utilisateur->getPassword())) {
             $response = addHeaders($response);
             $response = createJwT($response);
-            $data = array('name' => $utilisateur->getLastname(), 'prenom' => $utilisateur->getFirstname());
+            $data = array('lastname' => $utilisateur->getLastname(), 'firstname' => $utilisateur->getFirstname());
             $response->getBody()->write(json_encode($data));
         } else {
             $response = $response->withStatus(403);
@@ -218,7 +218,6 @@ function createProduct(Request $request, Response $response, $args)
 
     return addHeaders($response);
 }
-
 
 // Création d'un utilisateur + génération d'un JWT en utilisant Doctrine avec les champs : lastname, firstname, adress, postalcode, city, email, sex, login, password, phonenumber
 function createUtilisateur(Request $request, Response $response)
