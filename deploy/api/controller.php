@@ -181,12 +181,13 @@ function createProduct(Request $request, Response $response, $args)
     $price = $body['price'] ?? "";
     $category = $body['category'] ?? "";
 
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $name)) {
+    // Utilisation de filtres pour nettoyer les données
+    if (!preg_match("/^[a-zA-ZÀ-ÖØ-öø-ÿ '-âêîôûäëïöüàæçéèœùÂÊÎÔÛÄËÏÖÜÀÆÇÉÈŒÙ]{1,50}$/u", $name)) {
         $err = true;
-    }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $description)) {
+    } 
+    if (!preg_match("/^[a-zA-ZÀ-ÖØ-öø-ÿ '-âêîôûäëïöüàæçéèœùÂÊÎÔÛÄËÏÖÜÀÆÇÉÈŒÙ]{1,150}$/u", $description)) {
         $err = true;
-    }
+    } 
     if (!preg_match("/^[a-zA-Z0-9.,]{1,20}$/", $price)) {
         $err = true;
     }
@@ -239,34 +240,33 @@ function createUtilisateur(Request $request, Response $response)
     $phonenumber = $body['phonenumber'] ?? "";
 
     // Utilisation de filtres pour nettoyer les données
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $lastname)) {
+    if (!preg_match("/^[a-zA-ZÀ-ÖØ-öø-ÿ '-âêîôûäëïöüàæçéèœùÂÊÎÔÛÄËÏÖÜÀÆÇÉÈŒÙ]{1,50}$/u", $lastname)) {
+        $err = true;
+    } 
+    if (!preg_match("/^[a-zA-ZÀ-ÖØ-öø-ÿ '-âêîôûäëïöüàæçéèœùÂÊÎÔÛÄËÏÖÜÀÆÇÉÈŒÙ]{1,50}$/u", $firstname)) {
         $err = true;
     }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $firstname)) {
+    if (!preg_match("/^[a-zA-Z0-9À-ÖØ-öø-ÿ '-âêîôûäëïöüàæçéèœùÂÊÎÔÛÄËÏÖÜÀÆÇÉÈŒÙ]{1,50}$/u", $adress)) {
         $err = true;
     }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $adress)) {
+    if (!preg_match("/^[a-zA-Z0-9]{1,20}$/u", $postalcode)) {
         $err = true;
     }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $postalcode)) {
+    if (!preg_match("/^[a-zA-ZÀ-ÖØ-öø-ÿ '-âêîôûäëïöüàæçéèœùÂÊÎÔÛÄËÏÖÜÀÆÇÉÈŒÙ]{1,50}$/u", $city)) {
         $err = true;
     }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $city)) {
+    if (!preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/u", $email)) {
         $err = true;
     }
-    if (!preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $email)) {
+    if (!in_array($sex, array('M', 'F'))) {
         $err = true;
     }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $sex)) {
+    if (!preg_match("/^[a-zA-Z0-9_]{1,20}$/u", $login)) {
         $err = true;
     }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $login)) {
+    if (!preg_match("/^[0-9]{1,15}$/u", $phonenumber)) {
         $err = true;
     }
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/", $phonenumber)) {
-        $err = true;
-    }
-
     $password = password_hash($password, PASSWORD_BCRYPT);
 
     // Vérification des données
